@@ -1,0 +1,6 @@
+/target
+/backend/output/*
+.vscode
+/backend/output
+/dist
+/node_modules
