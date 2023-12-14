@@ -1,0 +1,4 @@
+File: "dimacs-files/input/SAT_2005/crafted/sabharwal05/counting/php/unsat/harder/php-020-019.shuffled-as.sat05-1190.cnf", Error: Timeout
+File: "dimacs-files/input/SAT_2005/crafted/sabharwal05/counting/php/unsat/harder/php-040-039.shuffled-as.sat05-1194.cnf", Error: Timeout
+File: "dimacs-files/input/SAT_2005/crafted/sabharwal05/counting/php/unsat/easier/php-045-035.shuffled-as.sat05-1181.cnf", Error: Timeout
+File: "dimacs-files/input/SAT_2005/crafted/sabharwal05/counting/php/unsat/easier/php-010-008.shuffled-as.sat05-1171.cnf", Error: Further warnings or errors occurred. Check logs for details.
