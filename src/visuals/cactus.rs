@@ -38,7 +38,15 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // If the HashMap is not empty, create a cactus plot
         if !all_data.is_empty() {
-            create_cactus_plot(&all_data, &pattern[12..17], output_dir)?;
+            if(pattern.contains("60sec"))
+            {
+                create_cactus_plot(&all_data, "60sec", output_dir)?;
+            }
+            else if(pattern.contains("duration"))
+            {
+                create_cactus_plot(&all_data, "duration", output_dir)?;
+            }
+
         }
     }
 
@@ -75,7 +83,8 @@ fn create_cactus_plot(data: &HashMap<String, Vec<f64>>, plot_name: &str, output_
         let mut sorted_times = times.clone();
         sorted_times.sort_by(|a, b| a.partial_cmp(b).unwrap());
     
-        let mut cumulative_sum = 0.0; // Cumulative sum of execution times
+        // Calculate the cumulative sum of the execution times
+        let mut cumulative_sum = 0.0; 
         let points: Vec<(usize, f64)> = sorted_times.iter().enumerate().map(|(idx, &time)| {
             cumulative_sum += time;
             (idx + 1, cumulative_sum)
