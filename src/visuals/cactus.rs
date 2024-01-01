@@ -38,11 +38,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // If the HashMap is not empty, create a cactus plot
         if !all_data.is_empty() {
-            if(pattern.contains("60sec"))
+            if pattern.contains("60sec")
             {
                 create_cactus_plot(&all_data, "60sec", output_dir)?;
             }
-            else if(pattern.contains("duration"))
+            else if pattern.contains("duration")
             {
                 create_cactus_plot(&all_data, "duration", output_dir)?;
             }

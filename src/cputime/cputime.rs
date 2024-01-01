@@ -4,7 +4,7 @@ use std::{
     fs::File,
     io::Result,
     path::Path,
-    process::{Command, Output},
+    process::Command,
     str,
     sync::mpsc,
     thread,
