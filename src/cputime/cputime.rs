@@ -7,9 +7,9 @@ use std::{
     process::Command,
     str,
     sync::mpsc,
-    thread,
     time::{Duration, Instant},
 };
+use threadpool::ThreadPool;
 
 fn main() -> Result<()> {
     let matches = command!()
@@ -43,34 +43,39 @@ fn main() -> Result<()> {
 
     csv_writer.write_record(&["File", "Heuristic", "Result", "Execution Time"])?;
 
-    visit_dirs(Path::new("src/inputs"), &mut csv_writer, use_time_limit, heuristic)?;
+    let pool = ThreadPool::new(2); 
+
+    visit_dirs(Path::new("src/inputs"), &mut csv_writer, use_time_limit, heuristic, &pool)?;
+
+    pool.join(); 
+
+    csv_writer.flush()?; 
 
     Ok(())
 }
 
-fn visit_dirs(dir: &Path, csv_writer: &mut Writer<File>, use_time_limit: bool, heuristic: &str) -> Result<()> {
+fn visit_dirs(dir: &Path, csv_writer: &mut Writer<File>, use_time_limit: bool, heuristic: &str, pool: &ThreadPool) -> Result<()> {
     if dir.is_dir() {
         for entry in std::fs::read_dir(dir)? {
             let entry = entry?;
             let path = entry.path();
             if path.is_dir() {
-                visit_dirs(&path, csv_writer, use_time_limit, heuristic)?;
+                visit_dirs(&path, csv_writer, use_time_limit, heuristic, pool)?;
             } else if path.extension().map_or(false, |ext| ext == "cnf") {
-                run_solver(&path, csv_writer, use_time_limit, heuristic)?;
+                run_solver(&path, csv_writer, use_time_limit, heuristic, pool)?;
             }
         }
     }
     Ok(())
 }
 
-
-fn run_solver(path: &Path, csv_writer: &mut Writer<File>, use_time_limit: bool, heuristic: &str) -> Result<()> {
+fn run_solver(path: &Path, csv_writer: &mut Writer<File>, use_time_limit: bool, heuristic: &str, pool: &ThreadPool) -> Result<()> {
     let (sender, receiver) = mpsc::channel();
     let start_time = Instant::now();
     let path_str = path.to_str().unwrap().to_owned();
     let heuristic_clone = heuristic.to_owned();
 
-    thread::spawn(move || {
+    pool.execute(move || {
         let output = Command::new("cargo")
             .args(&["run", "--bin", "dpll", "--", "-m", "dpll", "-i", &path_str, "-H", &heuristic_clone, "-d", "true"])
             .output()
@@ -80,12 +85,9 @@ fn run_solver(path: &Path, csv_writer: &mut Writer<File>, use_time_limit: bool, 
     });
 
     let result = if use_time_limit {
-        match receiver.recv_timeout(Duration::from_secs(60)) {
-            Ok(value) => Ok(value),
-            Err(e) => Err(std::io::Error::new(std::io::ErrorKind::Other, e))
-        }
+        receiver.recv_timeout(Duration::from_secs(60))
     } else {
-        receiver.recv_timeout(Duration::from_secs(600)).map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
+        receiver.recv_timeout(Duration::from_secs(600))
     };
 
     match result {
