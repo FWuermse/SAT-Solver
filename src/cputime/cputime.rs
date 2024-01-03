@@ -1,15 +1,15 @@
 use clap::{command, Arg};
-use csv::Writer;
 use std::{
-    fs::File,
-    io::Result,
-    path::Path,
-    process::Command,
+    fs::{self, File},
+    io::{self, Write, Result},
+    path::{Path, PathBuf},
+    process::{Command, Stdio},
     str,
-    sync::mpsc,
     time::{Duration, Instant},
 };
-use threadpool::ThreadPool;
+use wait_timeout::ChildExt; 
+
+
 
 fn main() -> Result<()> {
     let matches = command!()
@@ -29,69 +29,89 @@ fn main() -> Result<()> {
         )
         .get_matches();
 
-    let use_time_limit = matches.get_one::<String>("use_time_limit").map(|s| s == "true").unwrap();
-    let heuristic = matches.get_one::<String>("heuristic").unwrap().as_str();
-
-    let file_name = format!(
-        "src/cputime/{}_{}.csv",
-        if use_time_limit { "60sec" } else { "duration" },
-        heuristic
-    );
-
-    let file = File::create(&file_name)?;
-    let mut csv_writer = Writer::from_writer(file);
-
-    csv_writer.write_record(&["File", "Heuristic", "Result", "Execution Time"])?;
-
-    let pool = ThreadPool::new(2); 
-
-    visit_dirs(Path::new("src/inputs"), &mut csv_writer, use_time_limit, heuristic, &pool)?;
-
-    pool.join(); 
-
-    csv_writer.flush()?; 
-
-    Ok(())
-}
-
-fn visit_dirs(dir: &Path, csv_writer: &mut Writer<File>, use_time_limit: bool, heuristic: &str, pool: &ThreadPool) -> Result<()> {
-    if dir.is_dir() {
-        for entry in std::fs::read_dir(dir)? {
-            let entry = entry?;
-            let path = entry.path();
-            if path.is_dir() {
-                visit_dirs(&path, csv_writer, use_time_limit, heuristic, pool)?;
-            } else if path.extension().map_or(false, |ext| ext == "cnf") {
-                run_solver(&path, csv_writer, use_time_limit, heuristic, pool)?;
+        let use_time_limit = matches.get_one::<String>("use_time_limit").map(|s| s == "true").unwrap();
+        let heuristic = matches.get_one::<String>("heuristic").unwrap().as_str();
+    
+        let file_name = format!(
+            "src/cputime/{}_{}.csv",
+            if use_time_limit { "60sec" } else { "duration" },
+            heuristic
+        );
+    
+        let mut csv_file = File::create(file_name)?;
+    
+        writeln!(csv_file, "File,Heuristic,Result,Execution Time")?;
+    
+        let cnf_files = find_cnf_files("src/inputs")?;
+    
+        for path in cnf_files {
+            let result = if use_time_limit {
+                run_solver_with_limit(&path, heuristic, 60)
+            } else {
+                run_solver(&path, heuristic)
+            };
+  
+            match result {
+                Ok((status, duration)) => {
+                    writeln!(csv_file, "{},{},{},{}", path.display(), heuristic, status, duration)?;
+                },
+                Err(e) => {
+                    eprintln!("Error processing file {}: {}", path.display(), e);
+                }
             }
         }
+    
+        Ok(())
     }
-    Ok(())
+
+fn find_cnf_files<P: AsRef<Path>>(base_path: P) -> io::Result<Vec<PathBuf>> {
+    let mut files = Vec::new();
+    for entry in fs::read_dir(base_path)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_dir() {
+            files.extend(find_cnf_files(path)?);
+        } else if path.extension().and_then(|s| s.to_str()) == Some("cnf") {
+            files.push(path);
+        }
+    }
+    Ok(files)
 }
 
-fn run_solver(path: &Path, csv_writer: &mut Writer<File>, use_time_limit: bool, heuristic: &str, pool: &ThreadPool) -> Result<()> {
-    let (sender, receiver) = mpsc::channel();
-    let start_time = Instant::now();
-    let path_str = path.to_str().unwrap().to_owned();
-    let heuristic_clone = heuristic.to_owned();
+fn run_solver<P: AsRef<Path>>(path: P, heuristic: &str) -> io::Result<(String, String)> {
+    let start = Instant::now();
+    let path_str = path.as_ref().to_str().unwrap();
 
-    pool.execute(move || {
-        let output = Command::new("cargo")
-            .args(&["run", "--bin", "dpll", "--", "-m", "dpll", "-i", &path_str, "-H", &heuristic_clone, "-d", "true"])
-            .output()
-            .expect("Failed to execute command");
-        let elapsed_time = start_time.elapsed();
-        sender.send((output, elapsed_time)).expect("Failed to send output");
-    });
+    let output = Command::new("cargo")
+        .args(&["run", "--bin", "dpll", "--", "-m", "dpll", "-i", path_str, "-H", heuristic, "-d", "true"])
+        .output()?;
 
-    let result = if use_time_limit {
-        receiver.recv_timeout(Duration::from_secs(60))
+    let duration = start.elapsed();
+    let solver_output = str::from_utf8(&output.stdout).unwrap_or("Error while decoding output").trim();
+    let status = if solver_output.contains("Unsat") {
+        "UNSAT"
+    } else if solver_output.contains("Sat") {
+        "SAT"
     } else {
-        receiver.recv_timeout(Duration::from_secs(600))
+        "Unknown Result"
     };
 
-    match result {
-        Ok((output, elapsed_time)) => {
+    Ok((status.to_string(), format!("{}.{}", duration.as_secs(), duration.subsec_millis())))
+}
+
+
+fn run_solver_with_limit<P: AsRef<Path>>(path: P, heuristic: &str, limit: u64) -> io::Result<(String, String)> {
+    let start = Instant::now();
+    let path_str = path.as_ref().to_str().unwrap();
+
+    let mut child = Command::new("cargo")
+        .args(&["run", "--bin", "dpll", "--", "-m", "dpll", "-i", path_str, "-H", heuristic, "-d", "true"])
+        .stdout(Stdio::piped())
+        .spawn()?;
+
+    let (status, execution_time) = match child.wait_timeout(Duration::from_secs(limit)).unwrap() {
+        Some(status) if status.success() => {
+            let output = child.wait_with_output()?;
             let solver_output = str::from_utf8(&output.stdout).unwrap_or("Error while decoding output").trim();
             let result = if solver_output.contains("Unsat") {
                 "UNSAT"
@@ -100,24 +120,14 @@ fn run_solver(path: &Path, csv_writer: &mut Writer<File>, use_time_limit: bool, 
             } else {
                 "Unknown Result"
             };
-
-            csv_writer.write_record(&[
-                path.display().to_string(),
-                heuristic.to_string(),
-                result.to_string(),
-                format!("{}.{}", elapsed_time.as_secs(), elapsed_time.subsec_micros())
-            ])?;
+            let duration = start.elapsed();
+            (result.to_string(), format!("{}.{}", duration.as_secs(), duration.subsec_millis()))
         },
-        Err(_) => {
-            csv_writer.write_record(&[
-                path.display().to_string(),
-                heuristic.to_string(),
-                "Timeout".to_string(),
-                "--".to_string()
-            ])?;
+        Some(_) | None => {
+            let _ = child.kill(); 
+            ("TIMEOUT".to_string(), "--".to_string())
         }
-    }
+    };
 
-    csv_writer.flush()?; 
-    Ok(())
+    Ok((status, execution_time))
 }
