@@ -1,0 +1,66 @@
+Heuristic: MOM
+Correctly solved: 83
+Incorrectly solved: 4
+Timeouts: 115
+Total cases: 202
+src/inputs/sat/ssa7552-159.cnf,MOM,UNSAT,0.255
+src/inputs/sat/ssa7552-158.cnf,MOM,UNSAT,0.246
+src/inputs/sat/ssa7552-038.cnf,MOM,UNSAT,0.268
+src/inputs/sat/uf50-06.cnf,MOM,UNSAT,0.366
+
+
+Heuristic: DLCS
+Correctly solved: 84
+Incorrectly solved: 4
+Timeouts: 114
+Total cases: 202
+src/inputs/sat/ssa7552-159.cnf,DLCS,UNSAT,0.284
+src/inputs/sat/ssa7552-158.cnf,DLCS,UNSAT,0.206
+src/inputs/sat/ssa7552-038.cnf,DLCS,UNSAT,0.210
+src/inputs/sat/uf50-06.cnf,DLCS,UNSAT,0.216
+
+
+Heuristic: DLIS
+Correctly solved: 82
+Incorrectly solved: 4
+Timeouts: 116
+Total cases: 202
+src/inputs/sat/ssa7552-159.cnf,DLIS,UNSAT,0.419
+src/inputs/sat/ssa7552-158.cnf,DLIS,UNSAT,0.204
+src/inputs/sat/ssa7552-038.cnf,DLIS,UNSAT,0.209
+src/inputs/sat/uf50-06.cnf,DLIS,UNSAT,0.260
+
+
+Heuristic: Jeroslaw-Wang
+Correctly solved: 93
+Incorrectly solved: 4
+Timeouts: 105
+Total cases: 202
+src/inputs/sat/ssa7552-159.cnf,Jeroslaw-Wang,UNSAT,0.244
+src/inputs/sat/ssa7552-158.cnf,Jeroslaw-Wang,UNSAT,0.256
+src/inputs/sat/ssa7552-038.cnf,Jeroslaw-Wang,UNSAT,0.238
+src/inputs/sat/uf50-06.cnf,Jeroslaw-Wang,UNSAT,0.280
+
+
+Heuristic: Boehm
+Correctly solved: 85
+Incorrectly solved: 4
+Timeouts: 113
+Total cases: 202
+src/inputs/sat/ssa7552-159.cnf,Boehm,UNSAT,0.228
+src/inputs/sat/ssa7552-158.cnf,Boehm,UNSAT,0.202
+src/inputs/sat/ssa7552-038.cnf,Boehm,UNSAT,0.216
+src/inputs/sat/uf50-06.cnf,Boehm,UNSAT,0.215
+
+
+Heuristic: arbitrary
+Correctly solved: 77
+Incorrectly solved: 4
+Timeouts: 121
+Total cases: 202
+src/inputs/sat/ssa7552-159.cnf,arbitrary,UNSAT,0.232
+src/inputs/sat/ssa7552-158.cnf,arbitrary,UNSAT,0.205
+src/inputs/sat/ssa7552-038.cnf,arbitrary,UNSAT,0.207
+src/inputs/sat/uf50-06.cnf,arbitrary,UNSAT,0.530
+
+

@@ -1,4 +1,3 @@
-// Import necessary libraries
 use plotters::prelude::*;
 use csv::Reader;
 use std::error::Error;
