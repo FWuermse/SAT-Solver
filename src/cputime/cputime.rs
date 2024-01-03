@@ -40,7 +40,7 @@ fn main() -> Result<()> {
     writeln!(csv_file, "File,Heuristic,Result,Execution Time")?;
 
     let cnf_files = find_cnf_files("src/inputs")?;
-    let pool = ThreadPool::new(4); // Anzahl der Threads
+    let pool = ThreadPool::new(6); 
     let (tx, rx) = mpsc::channel();
 
     for path in &cnf_files {
@@ -48,7 +48,6 @@ fn main() -> Result<()> {
         let heuristic_clone = heuristic.to_string();
         let path_clone = path.clone();
         pool.execute(move || {
-            println!("Running solver for {:?}", path_clone); // Debug-Ausgabe
             let result = if use_time_limit {
                 run_solver_with_limit(&path_clone, &heuristic_clone, 60)
             } else {
@@ -66,13 +65,12 @@ fn main() -> Result<()> {
             Ok(data) => data,
             Err(e) => {
                 eprintln!("Failed to receive data: {}", e);
-                continue; // Überspringt die aktuelle Iteration der Schleife
+                continue; 
             }
         };
     
         match result {
             Ok((status, duration)) => {
-                println!("Writing to CSV for {:?}", path); // Debug-Ausgabe
                 writeln!(csv_file, "{},{},{},{}", path.display(), heuristic, status, duration)?;
             },
             Err(e) => {
