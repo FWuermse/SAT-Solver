@@ -1,7 +1,7 @@
 | Heuristics | DPLL (60sec) | PL (60sec) |
 |------------|--------------|------------|
-|arbitrary|        x      |     ?       |
-|dlis|                  |            |
+|arbitrary| x | ? |
+|dlis|         x         |       ?     |
 |dlcs|                  |            |
 |mom|                  |            |
 |boehm|                |            |
