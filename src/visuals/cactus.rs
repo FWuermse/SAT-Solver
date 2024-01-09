@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let patterns = ["src/cputime/60sec_*.csv", "src/cputime/duration_*.csv"];
+    let patterns = ["src/cputime/60sec_*.csv"]; // , "src/cputime/duration_*.csv"
     let output_dir = "src/visuals/plots";
 
     std::fs::create_dir_all(output_dir)?;

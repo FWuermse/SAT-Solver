@@ -40,7 +40,7 @@ fn main() -> Result<()> {
     writeln!(csv_file, "File,Heuristic,Result,Execution Time")?;
 
     let cnf_files = find_cnf_files("src/inputs")?;
-    let pool = ThreadPool::new(6); 
+    let pool = ThreadPool::new(8); 
     let (tx, rx) = mpsc::channel();
 
     for path in &cnf_files {
@@ -103,8 +103,17 @@ fn run_solver<P: AsRef<Path>>(path: P, heuristic: &str) -> io::Result<(String, S
     let path_str = path.as_ref().to_str().unwrap();
 
     let output = Command::new("cargo")
-        .args(&["run", "--bin", "dpll", "--", "-m", "dpll", "-i", path_str, "-H", heuristic, "-d", "true"])
-        .output()?;
+    .args(&[
+        "run",
+        "--bin",
+        "dpll",
+        "--",
+        "dpll", 
+        path_str,
+        "-H", heuristic 
+    ])
+    .output()?;
+
 
     let duration = start.elapsed();
     let solver_output = str::from_utf8(&output.stdout).unwrap_or("Error while decoding output").trim();
@@ -124,7 +133,15 @@ fn run_solver_with_limit<P: AsRef<Path>>(path: P, heuristic: &str, limit: u64) -
     let path_str = path.as_ref().to_str().unwrap();
 
     let mut child = Command::new("cargo")
-        .args(&["run", "--bin", "dpll", "--", "-m", "dpll", "-i", path_str, "-H", heuristic, "-d", "true"])
+        .args(&[
+            "run",
+            "--bin",
+            "dpll",
+            "--",
+            "dpll",
+            path_str,
+            "-H", heuristic
+        ])
         .stdout(Stdio::piped())
         .spawn()?;
 

@@ -1,66 +1,56 @@
 Heuristic: MOM
-Correctly solved: 83
-Incorrectly solved: 4
-Timeouts: 115
+Correctly solved: 119
+Incorrectly solved: 0
+Timeouts: 83
 Total cases: 202
-src/inputs/sat/ssa7552-159.cnf,MOM,UNSAT,0.255
-src/inputs/sat/ssa7552-158.cnf,MOM,UNSAT,0.246
-src/inputs/sat/ssa7552-038.cnf,MOM,UNSAT,0.268
-src/inputs/sat/uf50-06.cnf,MOM,UNSAT,0.366
 
 
 Heuristic: DLCS
-Correctly solved: 84
-Incorrectly solved: 4
-Timeouts: 114
+Correctly solved: 109
+Incorrectly solved: 0
+Timeouts: 93
 Total cases: 202
-src/inputs/sat/ssa7552-159.cnf,DLCS,UNSAT,0.284
-src/inputs/sat/ssa7552-158.cnf,DLCS,UNSAT,0.206
-src/inputs/sat/ssa7552-038.cnf,DLCS,UNSAT,0.210
-src/inputs/sat/uf50-06.cnf,DLCS,UNSAT,0.216
 
 
 Heuristic: DLIS
-Correctly solved: 82
-Incorrectly solved: 4
-Timeouts: 116
+Correctly solved: 124
+Incorrectly solved: 0
+Timeouts: 78
 Total cases: 202
-src/inputs/sat/ssa7552-159.cnf,DLIS,UNSAT,0.419
-src/inputs/sat/ssa7552-158.cnf,DLIS,UNSAT,0.204
-src/inputs/sat/ssa7552-038.cnf,DLIS,UNSAT,0.209
-src/inputs/sat/uf50-06.cnf,DLIS,UNSAT,0.260
+
+
+Heuristic: custom
+Correctly solved: 103
+Incorrectly solved: 0
+Timeouts: 99
+Total cases: 202
 
 
 Heuristic: Jeroslaw-Wang
-Correctly solved: 93
-Incorrectly solved: 4
-Timeouts: 105
+Correctly solved: 114
+Incorrectly solved: 0
+Timeouts: 88
 Total cases: 202
-src/inputs/sat/ssa7552-159.cnf,Jeroslaw-Wang,UNSAT,0.244
-src/inputs/sat/ssa7552-158.cnf,Jeroslaw-Wang,UNSAT,0.256
-src/inputs/sat/ssa7552-038.cnf,Jeroslaw-Wang,UNSAT,0.238
-src/inputs/sat/uf50-06.cnf,Jeroslaw-Wang,UNSAT,0.280
 
 
 Heuristic: Boehm
-Correctly solved: 85
-Incorrectly solved: 4
-Timeouts: 113
+Correctly solved: 116
+Incorrectly solved: 0
+Timeouts: 86
 Total cases: 202
-src/inputs/sat/ssa7552-159.cnf,Boehm,UNSAT,0.228
-src/inputs/sat/ssa7552-158.cnf,Boehm,UNSAT,0.202
-src/inputs/sat/ssa7552-038.cnf,Boehm,UNSAT,0.216
-src/inputs/sat/uf50-06.cnf,Boehm,UNSAT,0.215
 
 
 Heuristic: arbitrary
-Correctly solved: 77
-Incorrectly solved: 4
-Timeouts: 121
+Correctly solved: 121
+Incorrectly solved: 0
+Timeouts: 81
 Total cases: 202
-src/inputs/sat/ssa7552-159.cnf,arbitrary,UNSAT,0.232
-src/inputs/sat/ssa7552-158.cnf,arbitrary,UNSAT,0.205
-src/inputs/sat/ssa7552-038.cnf,arbitrary,UNSAT,0.207
-src/inputs/sat/uf50-06.cnf,arbitrary,UNSAT,0.530
+
+
+Heuristic: vsids
+Correctly solved: 107
+Incorrectly solved: 0
+Timeouts: 95
+Total cases: 202
 
 
