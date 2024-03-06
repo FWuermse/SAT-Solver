@@ -70,8 +70,4 @@ impl ImplicationGraph {
             None => Err("No conflict node was found at this moment.".into()),
         }
     }
-    pub(crate) fn update(&mut self, valid_level: u32) {
-        // TODO: maybe quite expensive operation?
-        self.0.retain(|_, node| node.decision_level <= valid_level);
-    }
 }
