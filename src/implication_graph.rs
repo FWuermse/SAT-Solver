@@ -70,4 +70,8 @@ impl ImplicationGraph {
             None => Err("No conflict node was found at this moment.".into()),
         }
     }
+    
+    pub(crate) fn clear_conflict(&mut self) {
+        self.0.remove(&0);
+    }
 }
