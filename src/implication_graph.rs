@@ -16,8 +16,8 @@ impl ImplicationGraph {
         ImplicationGraph(HashMap::new())
     }
     pub(crate) fn insert_leaf(&mut self, var: i32, depth: u32) {
-        self.0.insert(
-            var.abs(),
+        self.0.entry(
+            var.abs()).or_insert(
             ImplicationGraphNode {
                 literal: var,
                 decision_level: depth,
@@ -45,13 +45,9 @@ impl ImplicationGraph {
         c_idx: usize,
         depth: u32,
     ) {
-        // Abort if the polarity of var ist not actually conflicting with the literal in c_idx
-        if source.is_negative() == val {
-            return;
-        }
         let vars = vars
             .iter()
-            .filter(|&v| self.0.get(v).is_some() || self.0.get(&-v).is_some())
+            .filter(|&v| self.0.get(&v.abs()).is_some())
             .map(|v| *v)
             .collect::<Vec<i32>>();
         self.0
