@@ -47,12 +47,14 @@ impl ImplicationGraph {
     ) {
         let vars = vars
             .iter()
-            .filter(|&v| self.0.get(&v.abs()).is_some())
+            .filter(|&v| self.0.get(v).is_some() || self.0.get(&-v).is_some())
             .map(|v| *v)
             .collect::<Vec<i32>>();
+        if self.0.contains_key(&source.abs()) {
+            print!("test");
+        }
         self.0
             .entry(source.abs())
-            .and_modify(|node| node.predecessors.extend(vars.clone()))
             .or_insert(ImplicationGraphNode {
                 literal: source,
                 decision_level: depth,
