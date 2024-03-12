@@ -41,7 +41,7 @@ impl ImplicationGraph {
             .map(|v| *v)
             .collect::<Vec<i32>>();
         if self.0.contains_key(&source.abs()) {
-            print!("test");
+            print!("|{}|", c_idx);
         }
         self.0.entry(source.abs()).or_insert(ImplicationGraphNode {
             literal: source,
