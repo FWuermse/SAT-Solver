@@ -41,7 +41,6 @@ impl ImplicationGraph {
         &mut self,
         vars: Vec<i32>,
         source: i32,
-        val: bool,
         c_idx: usize,
         depth: u32,
     ) {
