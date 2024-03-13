@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub(crate) struct ImplicationGraphNode {
@@ -34,14 +34,15 @@ impl ImplicationGraph {
             },
         );
     }
-    pub(crate) fn insert_edge(&mut self, vars: Vec<i32>, source: i32, c_idx: usize, depth: u32) {
+    pub(crate) fn insert_edge(&mut self, vars: Vec<i32>, source: i32, c_idx: usize, depth: u32) -> Result<(), usize> {
+        let mut res = Ok(());
         let vars = vars
             .iter()
             .filter(|&v| self.0.get(&v.abs()).is_some())
             .map(|v| *v)
             .collect::<Vec<i32>>();
         if self.0.contains_key(&source.abs()) {
-            //print!("|{}|", c_idx);
+            res = Err(c_idx);
         }
         self.0.entry(source.abs()).or_insert(ImplicationGraphNode {
             literal: source,
@@ -49,6 +50,7 @@ impl ImplicationGraph {
             reason: Some(c_idx),
             predecessors: vars.iter().map(|v| v.abs()).collect(),
         });
+        res
     }
     pub(crate) fn get_conflict_node(&self) -> Result<&ImplicationGraphNode, String> {
         match self.0.get(&0) {
