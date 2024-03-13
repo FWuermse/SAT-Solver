@@ -41,7 +41,7 @@ impl ImplicationGraph {
             .map(|v| *v)
             .collect::<Vec<i32>>();
         if self.0.contains_key(&source.abs()) {
-            print!("|{}|", c_idx);
+            //print!("|{}|", c_idx);
         }
         self.0.entry(source.abs()).or_insert(ImplicationGraphNode {
             literal: source,
@@ -59,8 +59,5 @@ impl ImplicationGraph {
 
     pub(crate) fn clear_conflict(&mut self) {
         self.0.remove(&0);
-    }
-    pub(crate) fn update_implication_graph(&mut self, valid_level: u32) {
-        self.0.retain(|_, node| node.decision_level <= valid_level);
     }
 }
