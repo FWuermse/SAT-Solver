@@ -108,7 +108,7 @@ fn run_solver<P: AsRef<Path>>(path: P, heuristic: &str) -> io::Result<(String, S
         "--bin",
         "dpll",
         "--",
-        "dpll", 
+        "cdcl", 
         path_str,
         "-H", heuristic 
     ])
@@ -138,7 +138,7 @@ fn run_solver_with_limit<P: AsRef<Path>>(path: P, heuristic: &str, limit: u64) -
             "--bin",
             "dpll",
             "--",
-            "dpll",
+            "cdcl",
             path_str,
             "-H", heuristic
         ])
