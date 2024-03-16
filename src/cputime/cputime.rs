@@ -106,7 +106,7 @@ fn run_solver<P: AsRef<Path>>(path: P, heuristic: &str) -> io::Result<(String, S
     .args(&[
         "run",
         "--bin",
-        "dpll",
+        "sat",
         "--",
         "cdcl", 
         path_str,
@@ -136,7 +136,7 @@ fn run_solver_with_limit<P: AsRef<Path>>(path: P, heuristic: &str, limit: u64) -
         .args(&[
             "run",
             "--bin",
-            "dpll",
+            "sat",
             "--",
             "cdcl",
             path_str,
@@ -149,9 +149,9 @@ fn run_solver_with_limit<P: AsRef<Path>>(path: P, heuristic: &str, limit: u64) -
         Some(status) if status.success() => {
             let output = child.wait_with_output()?;
             let solver_output = str::from_utf8(&output.stdout).unwrap_or("Error while decoding output").trim();
-            let result = if solver_output.contains("Unsat") {
+            let result = if solver_output.contains("UNSAT") {
                 "UNSAT"
-            } else if solver_output.contains("Sat") {
+            } else if solver_output.contains("SAT") {
                 "SAT"
             } else {
                 "Unknown Result"
