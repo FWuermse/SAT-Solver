@@ -117,12 +117,12 @@ fn run_solver<P: AsRef<Path>>(path: P, heuristic: &str) -> io::Result<(String, S
 
     let duration = start.elapsed();
     let solver_output = str::from_utf8(&output.stdout).unwrap_or("Error while decoding output").trim();
-    let status = if solver_output.contains("Unsat") {
+    let status = if solver_output.contains("UNSAT") {
         "UNSAT"
-    } else if solver_output.contains("Sat") {
+    } else if solver_output.contains("SAT") {
         "SAT"
     } else {
-        "Unknown Result"
+        solver_output
     };
 
     Ok((status.to_string(), format!("{}.{}", duration.as_secs(), duration.subsec_millis())))
@@ -154,7 +154,7 @@ fn run_solver_with_limit<P: AsRef<Path>>(path: P, heuristic: &str, limit: u64) -
             } else if solver_output.contains("SAT") {
                 "SAT"
             } else {
-                "Unknown Result"
+                solver_output
             };
             let duration = start.elapsed();
             (result.to_string(), format!("{}.{}", duration.as_secs(), duration.subsec_millis()))
