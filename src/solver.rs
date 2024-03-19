@@ -1,5 +1,4 @@
 use std::{
-    error::Error,
     fs, io,
     path::{Path, PathBuf},
     time::{Duration, Instant},
@@ -8,7 +7,7 @@ use std::{
 use crate::{
     cdcl::CDCL,
     cli::Heuristic,
-    dpll::{self, DIMACSOutput},
+    dpll::DIMACSOutput,
 };
 
 fn solve_all_inputs() -> io::Result<()> {
@@ -90,11 +89,20 @@ fn run_solver<P: AsRef<Path>>(
     let start = Instant::now();
     let (input, v_c, c_c) = crate::parse::parse(path.as_ref().to_str().unwrap()).unwrap();
 
-    let mut solver = CDCL::new(input, v_c, c_c, heuristic, false);
+    let mut solver = CDCL::new(
+        input,
+        v_c,
+        c_c,
+        heuristic,
+        false,
+        restart_threshold,
+        use_luby,
+        factor,
+    );
     let (tx, rx) = channel();
 
     thread::spawn(move || {
-        let result = solver.solve(restart_threshold, use_luby, factor);
+        let result = solver.solve();
         tx.send(result).unwrap();
     });
 
