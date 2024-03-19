@@ -4,11 +4,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::{
-    cdcl::CDCL,
-    cli::Heuristic,
-    dpll::DIMACSOutput,
-};
+use crate::{cdcl::CDCL, cli::Heuristic, dpll::DIMACSOutput};
 
 fn solve_all_inputs() -> io::Result<()> {
     let files = find_cnf_files("src/inputs")?;
@@ -98,6 +94,8 @@ fn run_solver<P: AsRef<Path>>(
         restart_threshold,
         use_luby,
         factor,
+        10,
+        10,
     );
     let (tx, rx) = channel();
 
