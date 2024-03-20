@@ -96,6 +96,7 @@ fn run_solver<P: AsRef<Path>>(
         factor,
         10,
         10,
+        None,
     );
     let (tx, rx) = channel();
 

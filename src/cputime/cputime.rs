@@ -40,7 +40,7 @@ fn main() -> Result<()> {
     writeln!(csv_file, "File,Heuristic,Result,Execution Time")?;
 
     let cnf_files = find_cnf_files("src/inputs")?;
-    let pool = ThreadPool::new(8); 
+    let pool = ThreadPool::new(1); 
     let (tx, rx) = mpsc::channel();
 
     for path in &cnf_files {
