@@ -40,7 +40,7 @@ fn main() -> Result<()> {
     writeln!(csv_file, "File,Heuristic,Result,Execution Time")?;
 
     let cnf_files = find_cnf_files("src/inputs")?;
-    let pool = ThreadPool::new(8); 
+    let pool = ThreadPool::new(1); 
     let (tx, rx) = mpsc::channel();
 
     for path in &cnf_files {
@@ -106,9 +106,9 @@ fn run_solver<P: AsRef<Path>>(path: P, heuristic: &str) -> io::Result<(String, S
     .args(&[
         "run",
         "--bin",
-        "dpll",
+        "sat",
         "--",
-        "dpll", 
+        "cdcl", 
         path_str,
         "-H", heuristic 
     ])
@@ -117,12 +117,12 @@ fn run_solver<P: AsRef<Path>>(path: P, heuristic: &str) -> io::Result<(String, S
 
     let duration = start.elapsed();
     let solver_output = str::from_utf8(&output.stdout).unwrap_or("Error while decoding output").trim();
-    let status = if solver_output.contains("Unsat") {
+    let status = if solver_output.contains("UNSAT") {
         "UNSAT"
-    } else if solver_output.contains("Sat") {
+    } else if solver_output.contains("SAT") {
         "SAT"
     } else {
-        "Unknown Result"
+        solver_output
     };
 
     Ok((status.to_string(), format!("{}.{}", duration.as_secs(), duration.subsec_millis())))
@@ -136,9 +136,9 @@ fn run_solver_with_limit<P: AsRef<Path>>(path: P, heuristic: &str, limit: u64) -
         .args(&[
             "run",
             "--bin",
-            "dpll",
+            "sat",
             "--",
-            "dpll",
+            "cdcl",
             path_str,
             "-H", heuristic
         ])
@@ -149,12 +149,12 @@ fn run_solver_with_limit<P: AsRef<Path>>(path: P, heuristic: &str, limit: u64) -
         Some(status) if status.success() => {
             let output = child.wait_with_output()?;
             let solver_output = str::from_utf8(&output.stdout).unwrap_or("Error while decoding output").trim();
-            let result = if solver_output.contains("Unsat") {
+            let result = if solver_output.contains("UNSAT") {
                 "UNSAT"
-            } else if solver_output.contains("Sat") {
+            } else if solver_output.contains("SAT") {
                 "SAT"
             } else {
-                "Unknown Result"
+                solver_output
             };
             let duration = start.elapsed();
             (result.to_string(), format!("{}.{}", duration.as_secs(), duration.subsec_millis()))
