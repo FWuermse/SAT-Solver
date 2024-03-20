@@ -78,9 +78,9 @@ use std::thread;
 fn run_solver<P: AsRef<Path>>(
     path: P,
     heuristic: Heuristic,
-    restart_threshold: Option<usize>,
+    restart_threshold: Option<u32>,
     use_luby: bool,
-    factor: Option<usize>,
+    factor: Option<u32>,
 ) -> io::Result<(String, String)> {
     let start = Instant::now();
     let (input, v_c, c_c) = crate::parse::parse(path.as_ref().to_str().unwrap()).unwrap();
