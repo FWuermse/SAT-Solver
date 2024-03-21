@@ -1,3 +1,0 @@
-[submodule "dimacs-files"]
-	path = dimacs-files
-	url = git@gitlab2.cip.ifi.lmu.de:wuermseer/dimacs-files.git
